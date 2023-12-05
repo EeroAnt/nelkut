@@ -38,23 +38,26 @@ def check_users_cite_id_duplicate(cite_id, db, user_id):
 		return user_id
 	return False
 
-def list_books(db):
-	sql = "SELECT * FROM books"
+def list_books(db, user_id):
+	sql = f"SELECT * FROM books WHERE user_id={user_id}"
 	books = db.session.execute(text(sql)).fetchall()
 	return books
 
-def list_articles(db):
-	sql = "SELECT * FROM articles"
+def list_articles(db, user_id):
+	sql = f"SELECT * FROM articles WHERE user_id={user_id}"
 	articles = db.session.execute(text(sql)).fetchall()
 	return articles
 
-def list_inproceedings(db):
-	sql = "SELECT * FROM inproceedings"
+def list_inproceedings(db, user_id):
+	sql = f"SELECT * FROM inproceedings WHERE user_id={user_id}"
 	inproceedings = db.session.execute(text(sql)).fetchall()
 	return inproceedings
 
-def list_references(db):
-	books = list_books(db)
-	articles = list_articles(db)
-	inproceedings = list_inproceedings(db)
+def list_references(db, user_id):
+	if user_id != None:
+		books = list_books(db, user_id)
+		articles = list_articles(db, user_id)
+		inproceedings = list_inproceedings(db, user_id)
+	else:
+		books, articles, inproceedings = [], [], []
 	return books, articles, inproceedings

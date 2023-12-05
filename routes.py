@@ -8,7 +8,11 @@ import os
 
 @app.route("/")
 def index():
-	books, articles, inproceedings = refservice.list_references(db)
+	if len(session) != 0:
+		user_id = session["user_id"]
+	else:
+		user_id = None
+	books, articles, inproceedings = refservice.list_references(db, user_id)
 	return render_template("index.html", books = books, articles = articles, inproceedings = inproceedings)
 
 
@@ -21,7 +25,6 @@ def add_inproceeding():
 	if request.method == "GET":
 		return render_template("add_inproceeding_reference.html")
 	user_id = session["user_id"]
-	# todo: add the stuff from request to the database
 	refservice.add_inproceeding_to_database(db, request, user_id)
 
 	return redirect("/")
@@ -31,7 +34,6 @@ def add_article():
 	if request.method == "GET":
 		return render_template("add_article_reference.html")
 	user_id = session["user_id"]
-    # todo: add the stuff from request to the database
 	refservice.add_article_to_database(db, request, user_id)
 
 	return redirect("/")
@@ -41,7 +43,6 @@ def add_book():
 	if request.method == "GET":
 		return render_template("add_book_reference.html")
 
-	# todo: add the stuff from request to the database
 	user_id = session["user_id"]
 	refservice.add_book_to_database(db, request, user_id)
 
@@ -58,32 +59,32 @@ def download():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET":
-        return render_template("login.html")
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        if users.login(db, username, password):
-            return redirect("/")
-        else:
-            return render_template("error.html", message="Wrong username or password")
+	if request.method == "GET":
+		return render_template("login.html")
+	if request.method == "POST":
+		username = request.form["username"]
+		password = request.form["password"]
+		if users.login(db, username, password):
+			return redirect("/")
+		else:
+			return render_template("error.html", message="Wrong username or password")
 
 @app.route("/logout")
 def logout():
-    users.logout()
-    return redirect("/")
+	users.logout()
+	return redirect("/")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "GET":
-        return render_template("register.html")
-    if request.method == "POST":
-        username = request.form["username"]
-        password1 = request.form["password1"]
-        password2 = request.form["password2"]
-        if password1 != password2:
-            return render_template("error.html", message="Passwords do not match")
-        if users.register(username, password1):
-            return redirect("/")
-        else:
-            return render_template("error.html", message="Registration failed")
+	if request.method == "GET":
+		return render_template("register.html")
+	if request.method == "POST":
+		username = request.form["username"]
+		password1 = request.form["password1"]
+		password2 = request.form["password2"]
+		if password1 != password2:
+			return render_template("error.html", message="Passwords do not match")
+		if users.register(db, username, password1):
+			return redirect("/")
+		else:
+			return render_template("error.html", message="Registration failed")
