@@ -36,6 +36,7 @@ jobs:
         env:
           DATABASE: ${{secrets.TEST_DATABASE_ADDRESS}}
           DATABASE_URL: ${{secrets.TEST_DATABASE_ADDRESS}}
+          SECRET_KEY: ${{secrets.TEST_SECRET_KEY}}
         run: ./test.bash
 
       - name: Coverage report

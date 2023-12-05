@@ -63,7 +63,7 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        if users.login(username, password):
+        if users.login(db, username, password):
             return redirect("/")
         else:
             return render_template("error.html", message="Wrong username or password")

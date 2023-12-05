@@ -12,6 +12,8 @@ You are logged in.
 {% endif %}
 
 
+<!-- Temporary solution for not showing saved references before login, rest of solution at the end of this file -->
+{% if session.user_id %}
 
 <a href="/add">Add new reference</a>
 <a href="/bibtex">Download BibTex file</a>
@@ -86,3 +88,8 @@ Inproceedings
 	</tr>
 {% endfor %}
 </table>
+
+<!-- Rest of temporary solution -->
+{% else %}
+ to see saved references.
+{% endif %}

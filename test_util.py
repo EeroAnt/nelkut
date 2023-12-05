@@ -21,6 +21,8 @@ def init_test(init_sql=None):
 
 	with app.app_context():
 		db.init_app(app)
+		app.secret_key = getenv("SECRET_KEY")
+
 		if init_sql:
 			db.session.execute(text(init_sql))
 			db.session.commit()
