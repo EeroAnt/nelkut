@@ -11,7 +11,7 @@ CREATE TABLE users (
 
 CREATE TABLE inproceedings (
 	id SERIAL PRIMARY KEY,
-	cite_id TEXT UNIQUE,
+	cite_id TEXT,
 	author TEXT,
 	title TEXT,
 	year INTEGER,
@@ -23,7 +23,7 @@ CREATE TABLE inproceedings (
 
 CREATE TABLE articles (
 	id SERIAL PRIMARY KEY,
-	cite_id TEXT UNIQUE,
+	cite_id TEXT,
 	author TEXT,
 	title TEXT,
 	journal TEXT,
@@ -36,7 +36,7 @@ CREATE TABLE articles (
 
 CREATE TABLE books (
 	id SERIAL PRIMARY KEY,
-	cite_id TEXT UNIQUE,
+	cite_id TEXT,
 	author TEXT,
 	title TEXT,
 	year INTEGER,
