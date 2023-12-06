@@ -28,10 +28,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install postgresql-client
-
+          
   unittest:
     runs-on: ubuntu-latest
-      - name: Make Bash script executable
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make bash script executable
         run: chmod +x reset_test_db.bash
 
       - name: Run tests
