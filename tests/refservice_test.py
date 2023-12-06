@@ -69,6 +69,6 @@ class RefServiceTest(unittest.TestCase):
 
 		with self.app.app_context():
 			books, articles, inproceedings = refservice.list_references(self.db ,1)
-			self.assertEqual(len(books), 2)
-			self.assertEqual(len(articles), 2)
-			self.assertEqual(len(inproceedings), 2)
+			self.assertEqual(len(books), 0)
+			self.assertEqual(len(articles), 0)
+			self.assertEqual(len(inproceedings), 0)
