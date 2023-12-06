@@ -25,19 +25,11 @@ class UsersTest(unittest.TestCase):
 		with self.app.app_context(), self.app.test_request_context():
 			self.assertTrue(users.register(self.db, "new_user", "new_user_password"))
 
-	def test_register_taken_username(self):
-		with self.app.app_context(), self.app.test_request_context():
 			self.assertFalse(users.register(self.db, "user1", "password1"))
 			self.assertFalse(users.register(self.db, "user1", "new_password"))
 
-	def test_login_success(self):
-		with self.app.app_context(), self.app.test_request_context():
 			self.assertTrue(users.login(self.db, "user1", "password1"))
 
-	# def test_login_with_bad_user(self):
-	# 	with self.app.app_context(), self.app.test_request_context():
-	# 		self.assertFalse(users.login(self.db, "user123456", "password"))
+			self.assertFalse(users.login(self.db, "user123456", "password"))
 
-	def test_login_with_wrong_password(self):
-		with self.app.app_context(), self.app.test_request_context():
 			self.assertFalse(users.login(self.db, "user1", "wrong password"))
