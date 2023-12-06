@@ -48,8 +48,9 @@ jobs:
 
       - name: Setup chromedriver
         uses: nanasess/setup-chromedriver@master
-    
+  
   robot_test:
+  
     runs-on: ubuntu-latest
     name: Run Robot Framework Tests
     steps:
