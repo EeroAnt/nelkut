@@ -29,6 +29,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install postgresql-client
 
+  unittest:
+    runs-on: ubuntu-latest
       - name: Make Bash script executable
         run: chmod +x reset_test_db.bash
 
@@ -47,6 +49,7 @@ jobs:
 
       - name: Setup chromedriver
         uses: nanasess/setup-chromedriver@master
+    
   robot_test:
     runs-on: ubuntu-latest
     name: Run Robot Framework Tests
