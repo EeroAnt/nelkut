@@ -1,8 +1,9 @@
 from refservice import list_references
 from db import db
+from flask import session
 
 def sort_entries():
-    books, articles, inproceedings = list_references(db)
+    books, articles, inproceedings = list_references(db, session["user_id"])
     entries = []
     for book in books:
         entries.append(book_to_bibtex(book))
