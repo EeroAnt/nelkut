@@ -3,7 +3,7 @@ Library  SeleniumLibrary
 Library  ../AppLibrary.py
 
 *** Variables ***
-${SERVER}  nelkut.fly.dev
+${SERVER}  nelkut-test.fly.dev
 ${DELAY}  0.5 seconds
 ${HOME_URL}  http://${SERVER}
 ${ADD_URL}  http://${SERVER}/add
@@ -25,7 +25,7 @@ Go To Add Page
     Go To  ${ADD_URL}
 
 Home Page Should Be Open
-    Title Should Be  ${EMPTY}
+    Title Should Be  Index
 
 Add Page Should Be Open
     Title Should Be  New Reference
