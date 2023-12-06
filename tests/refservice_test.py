@@ -29,7 +29,7 @@ class RefServiceTest(unittest.TestCase):
 									 "end_page": 2,
 									 "user_id": 1})
 			refservice.add_book_to_database(self.db, request, 1)
-			books = refservice.list_books(self.db)
+			books = refservice.list_books(self.db, 1)
 			self.assertEqual(len(books), initial_amount + 1)
 
 	def test_add_article_to_database(self):
@@ -46,7 +46,7 @@ class RefServiceTest(unittest.TestCase):
 									"end_page": 4,
 									"user_id": 1})
 			refservice.add_article_to_database(self.db, request, 1)
-			articles = refservice.list_articles(self.db)
+			articles = refservice.list_articles(self.db, 1)
 			self.assertEqual(len(articles), initial_amount + 1)
 
 	def test_add_inproceeding_to_database(self):
@@ -62,7 +62,7 @@ class RefServiceTest(unittest.TestCase):
 									"end_page": 3,
 									"user_id": 1})
 			refservice.add_inproceeding_to_database(self.db, request, 1)
-			inproceedings = refservice.list_inproceedings(self.db)
+			inproceedings = refservice.list_inproceedings(self.db, 1)
 			self.assertEqual(len(inproceedings), initial_amount + 1)
 
 	def test_lists_length(self):
