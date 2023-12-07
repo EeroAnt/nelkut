@@ -11,7 +11,7 @@ Test Setup  Go To Main Page
 Click Link Add Article
     Click Link  Login
     Click Link  here
-    Set Username  testiartikkeli1
+    Set Username  testiartikkeli5
     Set Password  testi123
     Set Password Confirmation  testi123
     Submit Registration
@@ -25,7 +25,7 @@ Click Link Add Article
 Click Link Add Book
     Click Link  Login
     Click Link  here
-    Set Username  testikirja1
+    Set Username  testikirja5
     Set Password  testi123
     Set Password Confirmation  testi123
     Submit Registration
@@ -39,7 +39,7 @@ Click Link Add Book
 Click Link Add Inproceeding
     Click Link  Login
     Click Link  here
-    Set Username  testiinproceeding1
+    Set Username  testiinproceeding5
     Set Password  testi123
     Set Password Confirmation  testi123
     Submit Registration
