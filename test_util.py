@@ -9,22 +9,23 @@ class MockupRequest:
 	def __init__(self, form):
 		self.form = form
 
-def init_test(init_sql=None):
-	app = Flask(__name__)
-	app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE")
-	db = SQLAlchemy()
+__test_app = Flask(__name__)
+__test_app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE")
+__test_db = SQLAlchemy()
 
+with __test_app.app_context():
+	__test_db.init_app(__test_app)
+	__test_app.secret_key = getenv("SECRET_KEY")
+
+def init_test(init_sql=None):
 	if platform.system() == "Windows":
 		subprocess.call("bash reset_test_db.bash")
 	else:
 		subprocess.call("./reset_test_db.bash")
 
-	with app.app_context():
-		db.init_app(app)
-		app.secret_key = getenv("SECRET_KEY")
+	if init_sql:
+		with __test_app.app_context():
+			__test_db.session.execute(text(init_sql))
+			__test_db.session.commit()
 
-		if init_sql:
-			db.session.execute(text(init_sql))
-			db.session.commit()
-
-	return app, db
+	return __test_app, __test_db
