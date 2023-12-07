@@ -46,3 +46,9 @@ class UsersTest(unittest.TestCase):
 		with self.app.app_context(), self.app.test_request_context():
 			self.assertFalse(users.login(self.db, "user1", "wrong password"))
 			self.assertEqual(users.user_id(), 0)
+
+	def test_logout_after_login(self):
+		with self.app.app_context(), self.app.test_request_context():
+			self.assertTrue(users.login(self.db, "user1", "password1"))
+			users.logout()
+			self.assertEqual(users.user_id(), 0)
