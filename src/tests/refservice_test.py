@@ -17,15 +17,14 @@ class RefServiceTest(unittest.TestCase):
 		self.app, self.db = init_test(init_sql)
 
 	def test_add_book_to_database(self):
-		
 		with self.app.app_context():
 			initial_amount = len(refservice.list_books(self.db,1))
-			request = MockupRequest({"cite_id": "abcdefghijk", 
-									 "author": "Some Author", 
-									 "title": "Some Title", 
-									 "year": 1, 
-									 "publisher": "Some Publisher", 
-									 "start_page": 1, 
+			request = MockupRequest({"cite_id": "abcdefghijk",
+									 "author": "Some Author",
+									 "title": "Some Title",
+									 "year": 1,
+									 "publisher": "Some Publisher",
+									 "start_page": 1,
 									 "end_page": 2,
 									 "user_id": 1})
 			refservice.add_book_to_database(self.db, request, 1)
@@ -33,16 +32,15 @@ class RefServiceTest(unittest.TestCase):
 			self.assertEqual(len(books), initial_amount + 1)
 
 	def test_add_article_to_database(self):
-		
 		with self.app.app_context():
 			initial_amount = len(refservice.list_articles(self.db,1))
-			request = MockupRequest({"cite_id": "smfokmsc", 
-									"author": "jfpapoksad", 
-									"title": "adslkjasldk", 
-									"journal": "lafdsjajds", 
-									"year": 1, 
-									"volume": 2, 
-									"start_page": 3, 
+			request = MockupRequest({"cite_id": "smfokmsc",
+									"author": "jfpapoksad",
+									"title": "adslkjasldk",
+									"journal": "lafdsjajds",
+									"year": 1,
+									"volume": 2,
+									"start_page": 3,
 									"end_page": 4,
 									"user_id": 1})
 			refservice.add_article_to_database(self.db, request, 1)
@@ -50,15 +48,14 @@ class RefServiceTest(unittest.TestCase):
 			self.assertEqual(len(articles), initial_amount + 1)
 
 	def test_add_inproceeding_to_database(self):
-		
 		with self.app.app_context():
-			initial_amount = len(refservice.list_inproceedings(self.db,1))
-			request = MockupRequest({"cite_id": "ldjfajsja", 
-									"author": "lasjdljsadk", 
-									"title": "lajdsjaslkdjö", 
-									"year": 1, 
-									"booktitle": "sapjdajd", 
-									"start_page": 2, 
+			initial_amount = len(refservice.list_inproceedings(self.db, 1))
+			request = MockupRequest({"cite_id": "ldjfajsja",
+									"author": "lasjdljsadk",
+									"title": "lajdsjaslkdjö",
+									"year": 1,
+									"booktitle": "sapjdajd",
+									"start_page": 2,
 									"end_page": 3,
 									"user_id": 1})
 			refservice.add_inproceeding_to_database(self.db, request, 1)
@@ -66,9 +63,8 @@ class RefServiceTest(unittest.TestCase):
 			self.assertEqual(len(inproceedings), initial_amount + 1)
 
 	def test_lists_length(self):
-
 		with self.app.app_context():
-			books, articles, inproceedings = refservice.list_references(self.db ,1)
+			books, articles, inproceedings = refservice.list_references(self.db, 1)
 			self.assertEqual(len(books), 0)
 			self.assertEqual(len(articles), 0)
 			self.assertEqual(len(inproceedings), 0)

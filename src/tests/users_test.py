@@ -1,8 +1,8 @@
 import unittest
-import users
 from sqlalchemy.sql import text
-from test_util import init_test, MockupRequest
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import generate_password_hash
+from test_util import init_test
+import users
 
 init_sql = """
 INSERT INTO users (username, password) VALUES (:username, :password);
@@ -10,7 +10,7 @@ INSERT INTO users (username, password) VALUES (:username, :password);
 
 class UsersTest(unittest.TestCase):
 	def setUp(self):
-		self.app, self.db = init_test()	
+		self.app, self.db = init_test()
 
 		with self.app.app_context():
 			test_users = {

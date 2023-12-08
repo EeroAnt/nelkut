@@ -1,12 +1,14 @@
 from sqlalchemy.sql import text
-from flask import session
 
 def __insert(db, table_name, keys, request, user_id):
 	colon = ':'
-	sql = text(f"INSERT INTO {table_name} ({', '.join(keys)}, user_id) VALUES ({', '.join(colon + key for key in keys)}, :user_id)")
+	key_str = ', '.join(keys)
+	val_str = ', '.join(colon + key for key in keys)
+	sql = f"INSERT INTO {table_name} ({key_str}, user_id) VALUES ({val_str}, :user_id)"
+
 	keys_dict = {key: request.form[key] for key in keys}
 	keys_dict["user_id"] = user_id
-	db.session.execute(sql, keys_dict)
+	db.session.execute(text(sql), keys_dict)
 	db.session.commit()
 
 def add_inproceeding_to_database(db, request, user_id):
@@ -54,7 +56,7 @@ def list_inproceedings(db, user_id):
 	return inproceedings
 
 def list_references(db, user_id):
-	if user_id != None:
+	if user_id is not None:
 		books = list_books(db, user_id)
 		articles = list_articles(db, user_id)
 		inproceedings = list_inproceedings(db, user_id)

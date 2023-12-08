@@ -1,20 +1,20 @@
 from sqlalchemy.sql import text
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
-from db import db
 
 def login(db, username, password):
 	sql = text("SELECT id, password FROM users WHERE username=:username")
 	result = db.session.execute(sql, {"username":username})
 	user = result.fetchone()
+
 	if not user:
 		return False
 
 	if check_password_hash(user.password, password):
 		session["user_id"] = user.id
 		return True
-	else:
-		return False
+
+	return False
 
 def user_id():
 	return session.get("user_id", 0)
@@ -30,4 +30,5 @@ def register(db, username, password):
 		db.session.commit()
 	except:
 		return False
+
 	return login(db, username, password)

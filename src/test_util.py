@@ -1,9 +1,9 @@
+import subprocess
+import platform
 from os import getenv
 from flask import Flask
 from sqlalchemy.sql import text
 from flask_sqlalchemy import SQLAlchemy
-import subprocess
-import platform
 
 class MockupRequest:
 	def __init__(self, form):
