@@ -51,6 +51,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    name: Lint
 
     steps:
       - uses: actions/checkout@v4
@@ -66,8 +67,8 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-    - name: Run Pylint
-      run: poetry run pylint --rcfile=.pylintrc src
+      - name: Run Pylint
+        run: poetry run pylint --rcfile=.pylintrc src
 
   robot_test:
 
