@@ -8,10 +8,10 @@ Test Setup  Go To Main Page
 
 *** Test Cases ***
 
-Click Link Add Article
+User Can Add Article Reference
     Click Link  Login
     Click Link  here
-    Set Username  testiartikkeli5
+    Set Username  testiartikkeli65
     Set Password  testi123
     Set Password Confirmation  testi123
     Submit Registration
@@ -22,10 +22,10 @@ Click Link Add Article
     Page Should Contain  Experimental evaluation
     Click Button  Logout
 
-Click Link Add Book
+User Can Add Book Reference
     Click Link  Login
     Click Link  here
-    Set Username  testikirja5
+    Set Username  testikirja56
     Set Password  testi123
     Set Password Confirmation  testi123
     Submit Registration
@@ -36,10 +36,10 @@ Click Link Add Book
     Page Should Contain  Brookshear
     Click Button  Logout
 
-Click Link Add Inproceeding
+User Can Add Inproceeding Reference
     Click Link  Login
     Click Link  here
-    Set Username  testiinproceeding5
+    Set Username  testiinproceeding56
     Set Password  testi123
     Set Password Confirmation  testi123
     Submit Registration
