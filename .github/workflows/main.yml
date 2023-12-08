@@ -7,9 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    name: Build and run unit tests
+    name: Run Unit Tests
     
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +48,28 @@ jobs:
 
       - name: Setup chromedriver
         uses: nanasess/setup-chromedriver@master
-  
+
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint
+
+    steps:
+    - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install dependencies
+        run: poetry install
+
+    - name: Run Pylint
+      run: poetry run pylint --rcfile=.pylintrc src
+
   robot_test:
   
     runs-on: ubuntu-latest
