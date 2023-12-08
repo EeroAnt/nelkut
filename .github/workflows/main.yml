@@ -48,7 +48,7 @@ jobs:
 
       - name: Setup chromedriver
         uses: nanasess/setup-chromedriver@master
-
+  
   lint:
     runs-on: ubuntu-latest
     name: Lint
@@ -69,7 +69,7 @@ jobs:
 
     - name: Run Pylint
       run: poetry run pylint --rcfile=.pylintrc src
-
+  
   robot_test:
   
     runs-on: ubuntu-latest
