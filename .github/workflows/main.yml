@@ -50,6 +50,7 @@ jobs:
         uses: nanasess/setup-chromedriver@master
 
   lint:
+
     runs-on: ubuntu-latest
     name: Run Pylint
 
