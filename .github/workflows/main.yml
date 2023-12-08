@@ -51,7 +51,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    name: Lint
+    name: Run Pylint
 
     steps:
       - uses: actions/checkout@v4
