@@ -49,7 +49,7 @@ jobs:
       - name: Setup chromedriver
         uses: nanasess/setup-chromedriver@master
 
-  lint:
+  build:
 
     runs-on: ubuntu-latest
     name: Run Pylint
