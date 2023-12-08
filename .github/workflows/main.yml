@@ -68,7 +68,7 @@ jobs:
         run: poetry install
 
       - name: Run Pylint
-        run: poetry run pylint --rcfile=.pylintrc src
+        run: poetry run pylint --rcfile=.pylintrc --fail-under=90 src
 
   robot_test:
 
