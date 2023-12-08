@@ -20,7 +20,6 @@ Open And Configure Browser
     Open Browser  browser=chrome  options=${options}
     Set Selenium Speed  ${DELAY}
 
-
 Go To Add Page
     Go To  ${ADD_URL}
 
@@ -39,3 +38,25 @@ Add Article Page Should Be Open
 Add Book Page Should Be Open
     Title Should Be  New Reference
 
+Go To Main Page
+    Go To  ${HOME_URL}
+    Home Page Should Be Open
+
+Submit Registration
+    Click Button  Register
+
+Set Username
+	[Arguments]  ${username}
+	Input Text  username  ${username}
+
+Set Password
+	[Arguments]  ${password}
+	Input Password  password1  ${password}
+
+Login Password
+    [Arguments]  ${password}
+	Input Password  password  ${password}
+
+Set Password Confirmation
+	[Arguments]  ${password}
+	Input Password  password2  ${password}
