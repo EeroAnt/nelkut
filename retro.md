@@ -28,7 +28,7 @@ Toinen retrospektiivi toteutettiin sprintin 3 päätteeksi hyödyntämällä jä
 Deploy useammin, aina kun tehdään jotain muutoksia. Nyt myös useammalla on oikeudet deployta. Tallennetaan myös demottava versio sovelluksesta hyvissä ajoin, jolloin varmistetaan, että demottava versio toimii niin kuin pitää. 
 
 ## Stop
--
+Retrospektiivissä ei noussut esiin merkittäviä asioita stop-kategoriaan liittyen.
 
 ## Continue
 Jatketaan aktiivista kommunikointia Telegramissa. 
