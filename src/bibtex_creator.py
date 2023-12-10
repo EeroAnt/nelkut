@@ -22,16 +22,22 @@ def write_bibtex_file(entries, output_file):
 def to_bibtex(entry, entry_type):
 	# Create a dictionary of entry types and their corresponding fields
 	entry_fields = {
-		"book": {"type": "@book", "special_fields": [("publisher", entry.publisher)]},
-		"article": {"type": "@article", "special_fields": [("journal", entry.journal), ("volume", str(entry.volume))]},
-		"inproceeding": {"type": "@inproceedings", "special_fields": [("booktitle", entry.booktitle)]}
+		"book": {
+			"type": "@book", 
+			"special_fields": [("publisher", entry.publisher)]},
+		"article": {
+			"type": "@article", 
+			"special_fields": [("journal", entry.journal), ("volume", str(entry.volume))]},
+		"inproceeding": {
+			"type": "@inproceedings", 
+			"special_fields": [("booktitle", entry.booktitle)]}
 	}
 
 	# Choose the correct fields for the given entry type
 	fields = entry_fields[entry_type]
 
 	# Create the bibtex entry
-	bibtex_entry = f"{fields['type']}{{{entry.cite_id}},\n"
+	bibtex_entry = f"{fields['type']}{{{entry.cite_id}}},\n"
 	bibtex_entry += f"  author = {{{entry.author}}},\n"
 	bibtex_entry += f"  title = {{{entry.title}}},\n"
 	bibtex_entry += f"  year = {{{entry.year}}},\n"
