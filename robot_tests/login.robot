@@ -10,7 +10,7 @@ Test Setup  Register An Account, Add A Reference And Log Out
 As A User I Can See My Saved References After Login
 	Page Should Contain  to see saved references.
 	Click Link  Login
-	Set Username  testuser53
+	Set Username  testuser535
 	Login Password  testpassword
 	Click Button  Login
 	Page Should Contain  testbook
@@ -22,7 +22,7 @@ Register An Account, Add A Reference And Log Out
 	Home Page Should Be Open
 	Click Link  Login
 	Click Link  here
-	Set Username  testuser53
+	Set Username  testuser535
 	Set Password  testpassword
 	Set Password Confirmation  testpassword
 	Submit Registration
