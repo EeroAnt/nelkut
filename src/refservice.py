@@ -1,5 +1,7 @@
 from sqlalchemy.sql import text
 from flask import render_template
+from habanero import cn
+from doi_handler import from_doi_entry_to_database
 
 class Tag:
 	def __init__(self, id, name):
@@ -23,6 +25,7 @@ def __insert(db, table_name, keys, request, user_id):
 	sql = f"INSERT INTO {table_name} ({key_str}, user_id) VALUES ({val_str}, :user_id) RETURNING id"
 
 	keys_dict = {key: request.form[key] for key in keys}
+	keys_dict = __handle_input(keys_dict)
 	keys_dict["user_id"] = user_id
 	inserted_id = db.session.execute(text(sql), keys_dict).fetchone()[0]
 
@@ -30,6 +33,16 @@ def __insert(db, table_name, keys, request, user_id):
 	db.session.commit()
 
 	return True
+
+def __insert_from_doi(db, table_name, data):
+	colon = ':'
+	keys = data.keys()
+	key_str = ', '.join(keys)
+	val_str = ', '.join(colon + key for key in keys)
+	sql = f"INSERT INTO {table_name} ({key_str}) VALUES ({val_str})"
+
+	db.session.execute(text(sql), data)
+	db.session.commit()
 
 def add_inproceeding_to_database(db, request, user_id):
 	keys = ["cite_id", "author", "title", "year", "booktitle", "start_page", "end_page"]
@@ -60,6 +73,23 @@ def get_tags_for_ref(db, ref_type, ref_id):
 	sql = f"SELECT id, name FROM tags t JOIN tags_to_{ref_type}s t2r ON t.id = t2r.tag_id WHERE t2r.{ref_type}_id = :ref_id"
 	results = db.session.execute(text(sql), {"ref_id": ref_id}).fetchall()
 	return [Tag(*args) for args in results]
+
+def add_from_doi(db, request, user_id):
+	try:
+		entry = cn.content_negotiation(ids = request.form["doi"])
+		data = from_doi_entry_to_database(entry, user_id, request)
+		if check_users_cite_id_duplicate(data["cite_id"], db, user_id):
+			if data["ENTRYTYPE"]=="article":
+				del data["ENTRYTYPE"]
+				__insert_from_doi(db, "articles", data)
+			elif data["ENTRYTYPE"]=="book":
+				del data["ENTRYTYPE"]
+				__insert_from_doi(db, "books", data)
+			elif data["ENTRYTYPE"]=="inproceedings":
+				del data["ENTRYTYPE"]
+				__insert_from_doi(db, "inproceedings", data)
+	except:
+		return render_template("error.html", message="Invalid DOI.")
 
 def check_users_cite_id_duplicate(cite_id, db, user_id):
 	sql = "SELECT id FROM users WHERE id=:user_id"
@@ -95,3 +125,10 @@ def list_references(db, user_id):
 	else:
 		books, articles, inproceedings = [], [], []
 	return books, articles, inproceedings
+
+def __handle_input(input):
+	for key in input:
+		if key in ["start_page", "end_page","volume", "year"]:
+			if input[key] == "":
+				input[key] = None
+	return input

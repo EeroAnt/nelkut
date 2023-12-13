@@ -72,6 +72,16 @@ def new_tag():
 
 	return redirect("/")
 
+@app.route("/add_from_doi", methods=["GET", "POST"])
+def add_from_doi():
+	if request.method == "GET":
+		return render_template("add_doi_reference.html")
+	
+	user_id = session["user_id"]
+	refservice.add_from_doi(db, request, user_id)
+
+	return redirect("/")
+
 @app.route("/bibtex")
 def bibtex():
 	write_bibtex_file(sort_entries(), "bibtex.bib")

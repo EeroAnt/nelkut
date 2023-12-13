@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>New Reference</title>
+<h3>New Reference</h3>
+<form action="/add_from_doi" method="POST" enctype="multipart/form-data">
+	DOI:
+	<input type="text" name="doi" required>
+	<br><br>
+	Cite ID:
+	<input type="text" name="cite_id" required>
+	<br><br>
+	Pages (if not article):
+	<input type="text" name="start_page" required>
+	<input type="text" name="end_page" required>
+	<br><br>
+	<input type="submit" value="Save">
+	<input type="button" onclick="location.href='/'" value="Cancel">
+</form>
