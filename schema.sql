@@ -1,6 +1,10 @@
+DROP TABLE IF EXISTS tags_to_books;
+DROP TABLE IF EXISTS tags_to_articles;
+DROP TABLE IF EXISTS tags_to_inproceedings;
 DROP TABLE IF EXISTS books;
 DROP TABLE IF EXISTS articles;
 DROP TABLE IF EXISTS inproceedings;
+DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
