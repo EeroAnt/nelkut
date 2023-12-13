@@ -22,30 +22,33 @@ def add():
 
 @app.route("/add_inproceeding", methods=["GET", "POST"])
 def add_inproceeding():
-	if request.method == "GET":
-		return render_template("add_inproceeding_reference.html")
-
 	user_id = session["user_id"]
+
+	if request.method == "GET":
+		return render_template("add_inproceeding_reference.html", tags=refservice.get_tags(db, user_id))
+
 	refservice.add_inproceeding_to_database(db, request, user_id)
 
 	return redirect("/")
 
 @app.route("/add_article", methods=["GET", "POST"])
 def add_article():
-	if request.method == "GET":
-		return render_template("add_article_reference.html")
-
 	user_id = session["user_id"]
+
+	if request.method == "GET":
+		return render_template("add_article_reference.html", tags=refservice.get_tags(db, user_id))
+
 	refservice.add_article_to_database(db, request, user_id)
 
 	return redirect("/")
 
 @app.route("/add_book", methods=["GET", "POST"])
 def add_book():
-	if request.method == "GET":
-		return render_template("add_book_reference.html")
-
 	user_id = session["user_id"]
+
+	if request.method == "GET":
+		return render_template("add_book_reference.html", tags=refservice.get_tags(db, user_id))
+
 	refservice.add_book_to_database(db, request, user_id)
 
 	return redirect("/")

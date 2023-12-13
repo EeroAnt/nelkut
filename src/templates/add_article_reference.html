@@ -27,6 +27,13 @@
 	Cite ID:
 	<input type="text" name="cite_id" required>
 	<br><br>
+	Tags:
+	<br><br>
+	{% for tag in tags %}
+	{{ tag }}
+	<input type="checkbox" name="{{ tag }}">
+	{% endfor %}
+	<br><br>
 	<input type="submit" value="Save">
 	<input type="button" onclick="location.href='/'" value="Cancel">
 </form>
