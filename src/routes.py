@@ -50,6 +50,16 @@ def add_book():
 
 	return redirect("/")
 
+@app.route("/new_tag", methods=["GET", "POST"])
+def new_tag():
+	if request.method == "GET":
+		return render_template("new_tag.html")
+
+	user_id = session["user_id"]
+	refservice.add_new_tag(db, request, user_id)
+
+	return redirect("/")
+
 @app.route("/bibtex")
 def bibtex():
 	write_bibtex_file(sort_entries(), "bibtex.bib")

@@ -33,6 +33,11 @@ def add_book_to_database(db, request, user_id):
 	else:
 		return render_template("error.html", message="You already have an reference with this cite_id.")
 
+def add_new_tag(db, request, user_id):
+	sql = "INSERT INTO tags (name, user_id) VALUES (:name, :user_id)"
+	db.session.execute(text(sql), {"name": request.form["name"], "user_id": user_id})
+	db.session.commit()
+
 def check_users_cite_id_duplicate(cite_id, db, user_id):
 	sql = "SELECT id FROM users WHERE id=:user_id"
 	if db.session.execute(text(sql), {"user_id":user_id}).fetchone()[0]:
