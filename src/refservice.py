@@ -10,6 +10,7 @@ def __insert(db, table_name, keys, request, user_id):
 	sql = f"INSERT INTO {table_name} ({key_str}, user_id) VALUES ({val_str}, :user_id)"
 
 	keys_dict = {key: request.form[key] for key in keys}
+	keys_dict = __handle_input(keys_dict)
 	keys_dict["user_id"] = user_id
 	db.session.execute(text(sql), keys_dict)
 	db.session.commit()
@@ -61,7 +62,6 @@ def add_from_doi(db, request, user_id):
 				__insert_from_doi(db, "inproceedings", data)
 	except:
 		return render_template("error.html", message="Invalid DOI.")
-	
 
 def check_users_cite_id_duplicate(cite_id, db, user_id):
 	sql = "SELECT id FROM users WHERE id=:user_id"
@@ -97,3 +97,10 @@ def list_references(db, user_id):
 	else:
 		books, articles, inproceedings = [], [], []
 	return books, articles, inproceedings
+
+def __handle_input(input):
+	for key in input:	
+		if key in ["start_page", "end_page","volume", "year"]:
+			if input[key] == "":
+				input[key] = None
+	return input
