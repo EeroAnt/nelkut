@@ -1,12 +1,17 @@
 from sqlalchemy.sql import text
 from flask import render_template
 
+class Tag:
+	def __init__(self, id, name):
+		self.id = id
+		self.name = name
+
 def __add_tags(db, table_name, inserted_id, request, user_id):
 	sql = f"INSERT INTO tags_to_{table_name} (tag_id, {table_name[:-1]}_id) VALUES (:tag_id, :ref_id)"
 
 	for tag in get_tags(db, user_id):
-		if request.form.get(str(tag[0])) == 'on':
-			db.session.execute(text(sql), {"tag_id": tag[0], "ref_id": inserted_id})
+		if request.form.get(str(tag.id)) == 'on':
+			db.session.execute(text(sql), {"tag_id": tag.id, "ref_id": inserted_id})
 
 def __insert(db, table_name, keys, request, user_id):
 	if not check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
@@ -48,7 +53,8 @@ def add_new_tag(db, request, user_id):
 
 def get_tags(db, user_id):
 	sql = "SELECT id, name FROM tags WHERE user_id=:user_id"
-	return db.session.execute(text(sql), {"user_id": user_id}).fetchall()
+	results = db.session.execute(text(sql), {"user_id": user_id}).fetchall()
+	return [Tag(*args) for args in results]
 
 def check_users_cite_id_duplicate(cite_id, db, user_id):
 	sql = "SELECT id FROM users WHERE id=:user_id"

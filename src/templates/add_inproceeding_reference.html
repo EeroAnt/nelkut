@@ -27,8 +27,8 @@
 	Tags:
 	<br><br>
 	{% for tag in tags %}
-	{{ tag[1] }}
-	<input type="checkbox" name="{{ tag[0] }}">
+	{{ tag.name }}
+	<input type="checkbox" name="{{ tag.id }}">
 	{% endfor %}
 	<br><br>
 	<input type="submit" value="Save">
