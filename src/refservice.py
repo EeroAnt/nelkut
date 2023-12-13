@@ -9,7 +9,7 @@ class Tag:
 def __add_tags(db, table_name, inserted_id, request, user_id):
 	sql = f"INSERT INTO tags_to_{table_name} (tag_id, {table_name[:-1]}_id) VALUES (:tag_id, :ref_id)"
 
-	for tag in get_tags(db, user_id):
+	for tag in get_tags_for_user(db, user_id):
 		if request.form.get(str(tag.id)) == 'on':
 			db.session.execute(text(sql), {"tag_id": tag.id, "ref_id": inserted_id})
 
@@ -51,9 +51,14 @@ def add_new_tag(db, request, user_id):
 	db.session.execute(text(sql), {"name": request.form["name"], "user_id": user_id})
 	db.session.commit()
 
-def get_tags(db, user_id):
+def get_tags_for_user(db, user_id):
 	sql = "SELECT id, name FROM tags WHERE user_id=:user_id"
 	results = db.session.execute(text(sql), {"user_id": user_id}).fetchall()
+	return [Tag(*args) for args in results]
+
+def get_tags_for_ref(db, ref_type, ref_id):
+	sql = f"SELECT id, name FROM tags t JOIN tags_to_{ref_type}s t2r ON t.id = t2r.tag_id WHERE t2r.{ref_type}_id = :ref_id"
+	results = db.session.execute(text(sql), {"ref_id": ref_id}).fetchall()
 	return [Tag(*args) for args in results]
 
 def check_users_cite_id_duplicate(cite_id, db, user_id):

@@ -10,6 +10,9 @@ def __redirect_back(success):
 
 	return render_template("error.html", message="You already have a reference with this cite ID.")
 
+def __get_tags(ref_type, ref_id):
+	return ", ".join([tag.name for tag in refservice.get_tags_for_ref(db, ref_type, ref_id)])
+
 @app.route("/")
 def index():
 	if len(session) != 0:
@@ -19,7 +22,11 @@ def index():
 
 	books, articles, inproceedings = refservice.list_references(db, user_id)
 
-	return render_template("index.html", books=books, articles=articles, inproceedings=inproceedings)
+	return render_template("index.html",
+		books=books,
+		articles=articles,
+		inproceedings=inproceedings,
+		get_tags=__get_tags)
 
 @app.route("/add", methods=["GET"])
 def add():
@@ -30,7 +37,7 @@ def add_inproceeding():
 	user_id = session["user_id"]
 
 	if request.method == "GET":
-		return render_template("add_inproceeding_reference.html", tags=refservice.get_tags(db, user_id))
+		return render_template("add_inproceeding_reference.html", tags=refservice.get_tags_for_user(db, user_id))
 
 	success = refservice.add_inproceeding_to_database(db, request, user_id)
 	return __redirect_back(success)
@@ -40,7 +47,7 @@ def add_article():
 	user_id = session["user_id"]
 
 	if request.method == "GET":
-		return render_template("add_article_reference.html", tags=refservice.get_tags(db, user_id))
+		return render_template("add_article_reference.html", tags=refservice.get_tags_for_user(db, user_id))
 
 	success = refservice.add_article_to_database(db, request, user_id)
 	return __redirect_back(success)
@@ -50,7 +57,7 @@ def add_book():
 	user_id = session["user_id"]
 
 	if request.method == "GET":
-		return render_template("add_book_reference.html", tags=refservice.get_tags(db, user_id))
+		return render_template("add_book_reference.html", tags=refservice.get_tags_for_user(db, user_id))
 
 	success = refservice.add_book_to_database(db, request, user_id)
 	return __redirect_back(success)
