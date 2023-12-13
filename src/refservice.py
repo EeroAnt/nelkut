@@ -1,6 +1,13 @@
 from sqlalchemy.sql import text
 from flask import render_template
 
+def __add_tags(db, table_name, inserted_id, request, user_id):
+	sql = f"INSERT INTO tags_to_{table_name} (tag_id, {table_name[:-1]}_id) VALUES (:tag_id, :ref_id)"
+
+	for tag in get_tags(db, user_id):
+		if request.form.get(str(tag[0])) == 'on':
+			db.session.execute(text(sql), {"tag_id": tag[0], "ref_id": inserted_id})
+
 def __insert(db, table_name, keys, request, user_id):
 	if not check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
 		return False
@@ -8,11 +15,13 @@ def __insert(db, table_name, keys, request, user_id):
 	colon = ':'
 	key_str = ', '.join(keys)
 	val_str = ', '.join(colon + key for key in keys)
-	sql = f"INSERT INTO {table_name} ({key_str}, user_id) VALUES ({val_str}, :user_id)"
+	sql = f"INSERT INTO {table_name} ({key_str}, user_id) VALUES ({val_str}, :user_id) RETURNING id"
 
 	keys_dict = {key: request.form[key] for key in keys}
 	keys_dict["user_id"] = user_id
-	db.session.execute(text(sql), keys_dict)
+	inserted_id = db.session.execute(text(sql), keys_dict).fetchone()[0]
+
+	__add_tags(db, table_name, inserted_id, request, user_id)
 	db.session.commit()
 
 	return True
@@ -38,10 +47,8 @@ def add_new_tag(db, request, user_id):
 	db.session.commit()
 
 def get_tags(db, user_id):
-	sql = "SELECT name FROM tags WHERE user_id=:user_id"
-	tags = db.session.execute(text(sql), {"user_id": user_id}).fetchall()
-
-	return [tag[0] for tag in tags]
+	sql = "SELECT id, name FROM tags WHERE user_id=:user_id"
+	return db.session.execute(text(sql), {"user_id": user_id}).fetchall()
 
 def check_users_cite_id_duplicate(cite_id, db, user_id):
 	sql = "SELECT id FROM users WHERE id=:user_id"
