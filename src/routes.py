@@ -5,6 +5,11 @@ import users
 from db import db
 from bibtex_creator import write_bibtex_file, sort_entries
 
+def __redirect_back(success):
+	if success: return redirect("/")
+
+	return render_template("error.html", message="You already have a reference with this cite ID.")
+
 @app.route("/")
 def index():
 	if len(session) != 0:
@@ -27,9 +32,8 @@ def add_inproceeding():
 	if request.method == "GET":
 		return render_template("add_inproceeding_reference.html", tags=refservice.get_tags(db, user_id))
 
-	refservice.add_inproceeding_to_database(db, request, user_id)
-
-	return redirect("/")
+	success = refservice.add_inproceeding_to_database(db, request, user_id)
+	return __redirect_back(success)
 
 @app.route("/add_article", methods=["GET", "POST"])
 def add_article():
@@ -38,9 +42,8 @@ def add_article():
 	if request.method == "GET":
 		return render_template("add_article_reference.html", tags=refservice.get_tags(db, user_id))
 
-	refservice.add_article_to_database(db, request, user_id)
-
-	return redirect("/")
+	success = refservice.add_article_to_database(db, request, user_id)
+	return __redirect_back(success)
 
 @app.route("/add_book", methods=["GET", "POST"])
 def add_book():
@@ -49,9 +52,8 @@ def add_book():
 	if request.method == "GET":
 		return render_template("add_book_reference.html", tags=refservice.get_tags(db, user_id))
 
-	refservice.add_book_to_database(db, request, user_id)
-
-	return redirect("/")
+	success = refservice.add_book_to_database(db, request, user_id)
+	return __redirect_back(success)
 
 @app.route("/new_tag", methods=["GET", "POST"])
 def new_tag():

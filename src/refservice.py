@@ -2,6 +2,9 @@ from sqlalchemy.sql import text
 from flask import render_template
 
 def __insert(db, table_name, keys, request, user_id):
+	if not check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
+		return False
+
 	colon = ':'
 	key_str = ', '.join(keys)
 	val_str = ', '.join(colon + key for key in keys)
@@ -12,26 +15,22 @@ def __insert(db, table_name, keys, request, user_id):
 	db.session.execute(text(sql), keys_dict)
 	db.session.commit()
 
+	return True
+
 def add_inproceeding_to_database(db, request, user_id):
 	keys = ["cite_id", "author", "title", "year", "booktitle", "start_page", "end_page"]
-	if check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
-		__insert(db, "inproceedings", keys, request, user_id)
-	else:
-		return render_template("error.html", message="You already have an reference with this cite_id.")
+
+	return __insert(db, "inproceedings", keys, request, user_id)
 
 def add_article_to_database(db, request, user_id):
 	keys = ["cite_id", "author", "title", "journal", "year", "volume", "start_page", "end_page"]
-	if check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
-		__insert(db, "articles", keys, request, user_id)
-	else:
-		return render_template("error.html", message="You already have an reference with this cite_id.")
+
+	return __insert(db, "articles", keys, request, user_id)
 
 def add_book_to_database(db, request, user_id):
 	keys = ["cite_id", "author", "title", "year", "publisher", "start_page", "end_page"]
-	if check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
-		__insert(db, "books", keys, request, user_id)
-	else:
-		return render_template("error.html", message="You already have an reference with this cite_id.")
+
+	return __insert(db, "books", keys, request, user_id)
 
 def add_new_tag(db, request, user_id):
 	sql = "INSERT INTO tags (name, user_id) VALUES (:name, :user_id)"
