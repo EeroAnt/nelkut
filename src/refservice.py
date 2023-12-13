@@ -1,5 +1,7 @@
 from sqlalchemy.sql import text
 from flask import render_template
+from habanero import cn
+from doi_handler import from_doi_entry_to_database
 
 def __insert(db, table_name, keys, request, user_id):
 	colon = ':'
@@ -10,6 +12,16 @@ def __insert(db, table_name, keys, request, user_id):
 	keys_dict = {key: request.form[key] for key in keys}
 	keys_dict["user_id"] = user_id
 	db.session.execute(text(sql), keys_dict)
+	db.session.commit()
+
+def __insert_from_doi(db, table_name, data):
+	colon = ':'
+	keys = data.keys()
+	key_str = ', '.join(keys)
+	val_str = ', '.join(colon + key for key in keys)
+	sql = f"INSERT INTO {table_name} ({key_str}) VALUES ({val_str})"
+
+	db.session.execute(text(sql), data)
 	db.session.commit()
 
 def add_inproceeding_to_database(db, request, user_id):
@@ -32,6 +44,24 @@ def add_book_to_database(db, request, user_id):
 		__insert(db, "books", keys, request, user_id)
 	else:
 		return render_template("error.html", message="You already have an reference with this cite_id.")
+	
+def add_from_doi(db, request, user_id):
+	try:
+		entry = cn.content_negotiation(ids = request.form["doi"])
+		data = from_doi_entry_to_database(entry, user_id, request)
+		if check_users_cite_id_duplicate(data["cite_id"], db, user_id):
+			if data["ENTRYTYPE"]=="article":
+				del data["ENTRYTYPE"]
+				__insert_from_doi(db, "articles", data)
+			elif data["ENTRYTYPE"]=="book":
+				del data["ENTRYTYPE"]
+				__insert_from_doi(db, "books", data)
+			elif data["ENTRYTYPE"]=="inproceedings":
+				del data["ENTRYTYPE"]
+				__insert_from_doi(db, "inproceedings", data)
+	except:
+		return render_template("error.html", message="Invalid DOI.")
+	
 
 def check_users_cite_id_duplicate(cite_id, db, user_id):
 	sql = "SELECT id FROM users WHERE id=:user_id"
