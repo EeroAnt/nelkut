@@ -5,10 +5,14 @@ import users
 from db import db
 from bibtex_creator import write_bibtex_file, sort_entries
 
-def __redirect_back(success):
-	if success: return redirect("/")
+def __redirect_back(resultState):
+	match resultState:
+		case refservice.ResultState.DUPLICATE_CITE_ID:
+			return render_template("error.html", message="You already have a reference with this cite ID")
+		case refservice.ResultState.DOI_NOT_FOUND:
+			return render_template("error.html", message="Could not find a reference with this DOI")
 
-	return render_template("error.html", message="You already have a reference with this cite ID.")
+	return redirect("/")
 
 def __get_tags(ref_type, ref_id):
 	return ", ".join(tag.name for tag in refservice.get_tags_for_ref(db, ref_type, ref_id))
@@ -39,8 +43,8 @@ def add_inproceeding():
 	if request.method == "GET":
 		return render_template("add_inproceeding_reference.html", tags=refservice.get_tags_for_user(db, user_id))
 
-	success = refservice.add_inproceeding_to_database(db, request, user_id)
-	return __redirect_back(success)
+	resultState = refservice.add_inproceeding_to_database(db, request, user_id)
+	return __redirect_back(resultState)
 
 @app.route("/add_article", methods=["GET", "POST"])
 def add_article():
@@ -49,8 +53,8 @@ def add_article():
 	if request.method == "GET":
 		return render_template("add_article_reference.html", tags=refservice.get_tags_for_user(db, user_id))
 
-	success = refservice.add_article_to_database(db, request, user_id)
-	return __redirect_back(success)
+	resultState = refservice.add_article_to_database(db, request, user_id)
+	return __redirect_back(resultState)
 
 @app.route("/add_book", methods=["GET", "POST"])
 def add_book():
@@ -59,8 +63,8 @@ def add_book():
 	if request.method == "GET":
 		return render_template("add_book_reference.html", tags=refservice.get_tags_for_user(db, user_id))
 
-	success = refservice.add_book_to_database(db, request, user_id)
-	return __redirect_back(success)
+	resultState = refservice.add_book_to_database(db, request, user_id)
+	return __redirect_back(resultState)
 
 @app.route("/new_tag", methods=["GET", "POST"])
 def new_tag():
@@ -77,8 +81,8 @@ def add_from_doi():
 	if request.method == "GET":
 		return render_template("add_doi_reference.html")
 
-	success = refservice.add_from_doi(db, request, session["user_id"])
-	return __redirect_back(success)
+	resultState = refservice.add_from_doi(db, request, session["user_id"])
+	return __redirect_back(resultState)
 
 @app.route("/bibtex")
 def bibtex():

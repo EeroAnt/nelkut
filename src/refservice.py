@@ -1,8 +1,14 @@
+from enum import Enum
 from sqlalchemy.sql import text
 from flask import render_template
 from habanero import cn
 from doi_handler import from_doi_entry_to_database
 import requests
+
+class ResultState(Enum):
+	SUCCESS = 0
+	DUPLICATE_CITE_ID = 1
+	DOI_NOT_FOUND = 2
 
 def __make_plural(name):
 	if name[-1] == "s":
@@ -33,7 +39,7 @@ def __add_tags(db, table_name, inserted_id, request, user_id):
 
 def __insert(db, table_name, request, user_id):
 	if not check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
-		return False
+		return ResultState.DUPLICATE_CITE_ID
 
 	keys = get_keys(table_name)
 	key_str = ', '.join(keys)
@@ -47,7 +53,7 @@ def __insert(db, table_name, request, user_id):
 	__add_tags(db, table_name, inserted_id, request, user_id)
 	db.session.commit()
 
-	return True
+	return ResultState.SUCCESS
 
 def add_inproceeding_to_database(db, request, user_id):
 	return __insert(db, "inproceedings", request, user_id)
@@ -77,12 +83,12 @@ def add_from_doi(db, request, user_id):
 	try:
 		entry = cn.content_negotiation(ids = request.form["doi"])
 	except requests.exceptions.HTTPError:
-		return False
+		return ResultState.DOI_NOT_FOUND
 
 	columns, ref_type = from_doi_entry_to_database(entry, user_id, request)
 
 	if not check_users_cite_id_duplicate(columns["cite_id"], db, user_id):
-		return False
+		return ResultState.DUPLICATE_CITE_ID
 
 	key_str = ', '.join(columns.keys())
 	val_str = ', '.join(':' + key for key in columns)
@@ -90,7 +96,7 @@ def add_from_doi(db, request, user_id):
 
 	db.session.execute(text(sql), columns)
 	db.session.commit()
-	return True
+	return ResultState.SUCCESS
 
 def check_users_cite_id_duplicate(cite_id, db, user_id):
 	sql = "SELECT id FROM users WHERE id=:user_id"
