@@ -1,6 +1,5 @@
 *** Settings ***
 Library  SeleniumLibrary
-Library  ../AppLibrary.py
 
 *** Variables ***
 ${SERVER}  nelkut-test.fly.dev
