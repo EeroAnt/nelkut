@@ -79,7 +79,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Reset test database
-        run: chmod +x reset_test_db.bash
         run: ./reset_test_db.bash
       - name: Robot Framework
         uses: joonvena/robotframework-docker-action@v1.0
