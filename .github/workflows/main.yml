@@ -78,7 +78,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Reset test database
+        env:
+          DATABASE: ${{secrets.TEST_DATABASE_ADDRESS}}
+          DATABASE_URL: ${{secrets.TEST_DATABASE_ADDRESS}}
+          SECRET_KEY: ${{secrets.TEST_SECRET_KEY}}
         run: ./reset_test_db.bash
+
       - name: Robot Framework
         uses: joonvena/robotframework-docker-action@v1.0
