@@ -7,4 +7,5 @@ app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE")
 app.secret_key = getenv("SECRET_KEY")
 db.init_app(app)
 
+# pylint: disable=cyclic-import, wrong-import-position, unused-import
 import routes

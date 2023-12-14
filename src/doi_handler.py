@@ -1,5 +1,5 @@
 import bibtexparser
-import refservice
+from util import get_column_names, make_plural
 
 def from_doi_entry_to_database(entry, user_id, request):
 	bib_data = list(bibtexparser.loads(entry).entries_dict.values())[0]
@@ -9,7 +9,7 @@ def from_doi_entry_to_database(entry, user_id, request):
 		"cite_id": request.form["cite_id"],
 	}
 
-	for key in refservice.get_keys(bib_data["ENTRYTYPE"]):
+	for key in get_column_names(bib_data["ENTRYTYPE"]):
 		if key in bib_data:
 			columns[key] = bib_data[key]
 
@@ -19,4 +19,4 @@ def from_doi_entry_to_database(entry, user_id, request):
 		columns["start_page"] = request.form["start_page"]
 		columns["end_page"] = request.form["end_page"]
 
-	return columns, bib_data["ENTRYTYPE"]
+	return columns, make_plural(bib_data["ENTRYTYPE"])

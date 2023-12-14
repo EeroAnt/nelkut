@@ -1,4 +1,5 @@
 from sqlalchemy.sql import text
+from sqlalchemy.exc import IntegrityError
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -28,7 +29,8 @@ def register(db, username, password):
 		sql = text("INSERT INTO users (username, password) VALUES (:username, :password)")
 		db.session.execute(sql, {"username":username, "password":hash_value})
 		db.session.commit()
-	except:
+	except IntegrityError:
+		db.session.rollback()
 		return False
 
 	return login(db, username, password)

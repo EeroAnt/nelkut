@@ -5,11 +5,11 @@ import users
 from db import db
 from bibtex_creator import write_bibtex_file, sort_entries
 
-def __redirect_back(resultState):
-	match resultState:
-		case refservice.ResultState.DUPLICATE_CITE_ID:
+def __redirect_back(result_state):
+	match result_state:
+		case refservice.ResultState.duplicate_cite_id:
 			return render_template("error.html", message="You already have a reference with this cite ID")
-		case refservice.ResultState.DOI_NOT_FOUND:
+		case refservice.ResultState.doi_not_found:
 			return render_template("error.html", message="Could not find a reference with this DOI")
 
 	return redirect("/")
@@ -41,30 +41,33 @@ def add_inproceeding():
 	user_id = session["user_id"]
 
 	if request.method == "GET":
-		return render_template("add_inproceeding_reference.html", tags=refservice.get_tags_for_user(db, user_id))
+		return render_template("add_inproceeding_reference.html",
+			tags=refservice.get_tags_for_user(db, user_id))
 
-	resultState = refservice.add_inproceeding_to_database(db, request, user_id)
-	return __redirect_back(resultState)
+	result_state = refservice.add_inproceeding_to_database(db, request, user_id)
+	return __redirect_back(result_state)
 
 @app.route("/add_article", methods=["GET", "POST"])
 def add_article():
 	user_id = session["user_id"]
 
 	if request.method == "GET":
-		return render_template("add_article_reference.html", tags=refservice.get_tags_for_user(db, user_id))
+		return render_template("add_article_reference.html",
+			tags=refservice.get_tags_for_user(db, user_id))
 
-	resultState = refservice.add_article_to_database(db, request, user_id)
-	return __redirect_back(resultState)
+	result_state = refservice.add_article_to_database(db, request, user_id)
+	return __redirect_back(result_state)
 
 @app.route("/add_book", methods=["GET", "POST"])
 def add_book():
 	user_id = session["user_id"]
 
 	if request.method == "GET":
-		return render_template("add_book_reference.html", tags=refservice.get_tags_for_user(db, user_id))
+		return render_template("add_book_reference.html",
+			tags=refservice.get_tags_for_user(db, user_id))
 
-	resultState = refservice.add_book_to_database(db, request, user_id)
-	return __redirect_back(resultState)
+	result_state = refservice.add_book_to_database(db, request, user_id)
+	return __redirect_back(result_state)
 
 @app.route("/new_tag", methods=["GET", "POST"])
 def new_tag():
@@ -83,8 +86,8 @@ def add_from_doi():
 	if request.method == "GET":
 		return render_template("add_doi_reference.html", tags=refservice.get_tags_for_user(db, user_id))
 
-	resultState = refservice.add_from_doi(db, request, user_id)
-	return __redirect_back(resultState)
+	result_state = refservice.add_from_doi(db, request, user_id)
+	return __redirect_back(result_state)
 
 @app.route("/bibtex")
 def bibtex():

@@ -1,33 +1,12 @@
-from enum import Enum
+import requests
 from sqlalchemy.sql import text
-from flask import render_template
 from habanero import cn
 from doi_handler import from_doi_entry_to_database
-import requests
-
-class ResultState(Enum):
-	SUCCESS = 0
-	DUPLICATE_CITE_ID = 1
-	DOI_NOT_FOUND = 2
-
-def __make_plural(name):
-	if name[-1] == "s":
-		return name
-
-	return name + "s"
-
-def get_keys(ref_type):
-	keys = {
-		"inproceedings": ["cite_id", "author", "title", "year", "booktitle", "start_page", "end_page"],
-		"articles":      ["cite_id", "author", "title", "journal", "year", "volume", "start_page", "end_page"],
-		"books":         ["cite_id", "author", "title", "year", "publisher", "start_page", "end_page"]
-	}
-
-	return keys[__make_plural(ref_type)]
+from util import ResultState, get_column_names
 
 class Tag:
-	def __init__(self, id, name):
-		self.id = id
+	def __init__(self, tag_id, name):
+		self.id = tag_id
 		self.name = name
 
 def __add_tags(db, table_name, inserted_id, request, user_id):
@@ -39,21 +18,21 @@ def __add_tags(db, table_name, inserted_id, request, user_id):
 
 def __insert(db, table_name, request, user_id):
 	if not check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
-		return ResultState.DUPLICATE_CITE_ID
+		return ResultState.duplicate_cite_id
 
-	keys = get_keys(table_name)
+	keys = get_column_names(table_name)
 	key_str = ', '.join(keys)
 	val_str = ', '.join(':' + key for key in keys)
 	sql = f"INSERT INTO {table_name} ({key_str}, user_id) VALUES ({val_str}, :user_id) RETURNING id"
 
-	keys_dict = __handle_input({key: request.form[key] for key in keys})
-	keys_dict["user_id"] = user_id
-	inserted_id = db.session.execute(text(sql), keys_dict).fetchone()[0]
+	columns = __handle_input({key: request.form[key] for key in keys})
+	columns["user_id"] = user_id
+	inserted_id = db.session.execute(text(sql), columns).fetchone()[0]
 
 	__add_tags(db, table_name, inserted_id, request, user_id)
 	db.session.commit()
 
-	return ResultState.SUCCESS
+	return ResultState.success
 
 def add_inproceeding_to_database(db, request, user_id):
 	return __insert(db, "inproceedings", request, user_id)
@@ -75,7 +54,9 @@ def get_tags_for_user(db, user_id):
 	return [Tag(*args) for args in results]
 
 def get_tags_for_ref(db, ref_type, ref_id):
-	sql = f"SELECT id, name FROM tags t JOIN tags_to_{ref_type}s t2r ON t.id = t2r.tag_id WHERE t2r.{ref_type}_id = :ref_id"
+	sql = f"""SELECT id, name FROM tags t JOIN tags_to_{ref_type}s t2r
+		ON t.id = t2r.tag_id WHERE t2r.{ref_type}_id = :ref_id"""
+
 	results = db.session.execute(text(sql), {"ref_id": ref_id}).fetchall()
 	return [Tag(*args) for args in results]
 
@@ -83,22 +64,22 @@ def add_from_doi(db, request, user_id):
 	try:
 		entry = cn.content_negotiation(ids = request.form["doi"])
 	except requests.exceptions.HTTPError:
-		return ResultState.DOI_NOT_FOUND
+		return ResultState.doi_not_found
 
-	columns, ref_type = from_doi_entry_to_database(entry, user_id, request)
+	columns, table_name = from_doi_entry_to_database(entry, user_id, request)
 
 	if not check_users_cite_id_duplicate(columns["cite_id"], db, user_id):
-		return ResultState.DUPLICATE_CITE_ID
+		return ResultState.duplicate_cite_id
 
 	key_str = ', '.join(columns.keys())
 	val_str = ', '.join(':' + key for key in columns)
-	table_name = __make_plural(ref_type)
+
 	sql = f"INSERT INTO {table_name} ({key_str}) VALUES ({val_str}) RETURNING id"
 
 	inserted_id = db.session.execute(text(sql), columns).fetchone()[0]
 	__add_tags(db, table_name, inserted_id, request, user_id)
 	db.session.commit()
-	return ResultState.SUCCESS
+	return ResultState.success
 
 def check_users_cite_id_duplicate(cite_id, db, user_id):
 	sql = "SELECT id FROM users WHERE id=:user_id"
@@ -135,9 +116,9 @@ def list_references(db, user_id):
 		books, articles, inproceedings = [], [], []
 	return books, articles, inproceedings
 
-def __handle_input(input):
-	for key in input:
+def __handle_input(columns):
+	for key in columns:
 		if key in ["start_page", "end_page","volume", "year"]:
-			if input[key] == "":
-				input[key] = None
-	return input
+			if columns[key] == "":
+				columns[key] = None
+	return columns
