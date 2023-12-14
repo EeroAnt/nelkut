@@ -6,11 +6,11 @@ def sort_entries():
 	books, articles, inproceedings = list_references(db, session["user_id"])
 	entries = []
 	for book in books:
-		entries.append(book_to_bibtex(book))
+		entries.append(to_bibtex(book, "book"))
 	for article in articles:
-		entries.append(article_to_bibtex(article))
+		entries.append(to_bibtex(article, "article"))
 	for inproceeding in inproceedings:
-		entries.append(inproceeding_to_bibtex(inproceeding))
+		entries.append(to_bibtex(inproceeding, "inproceeding"))
 	return entries
 
 def write_bibtex_file(entries, output_file):
@@ -19,36 +19,31 @@ def write_bibtex_file(entries, output_file):
 			f.write(entry)
 			f.write('\n\n')
 
-def book_to_bibtex(book):
-	entry = '@book{'
-	entry += book.cite_id + ',\n'
-	entry += '  author = {' + book.author + '},\n'
-	entry += '  title = {' + book.title + '},\n'
-	entry += '  year = {' + str(book.year) + '},\n'
-	entry += '  publisher = {' + book.publisher + '},\n'
-	entry += '  pages = {' + str(book.start_page) + '--'+ str(book.end_page) + '},\n'
-	entry += '}\n'
-	return entry
+def to_bibtex(entry, entry_type):
+	# Create a dictionary of entry types and their corresponding fields
+	entry_fields = {
+		"book": {
+			"type": "@book", 
+			"special_fields": [("publisher", entry.publisher)]},
+		"article": {
+			"type": "@article", 
+			"special_fields": [("journal", entry.journal), ("volume", str(entry.volume))]},
+		"inproceeding": {
+			"type": "@inproceedings", 
+			"special_fields": [("booktitle", entry.booktitle)]}
+	}
 
-def article_to_bibtex(article):
-	entry = '@article{'
-	entry += article.cite_id + ',\n'
-	entry += '  author = {' + article.author + '},\n'
-	entry += '  title = {' + article.title + '},\n'
-	entry += '  journal = {' + article.journal + '},\n'
-	entry += '  year = {' + str(article.year) + '},\n'
-	entry += '  volume = {' + str(article.volume) + '},\n'
-	entry += '  pages = {' + str(article.start_page) + '--'+ str(article.end_page) + '},\n'
-	entry += '}\n'
-	return entry
+	# Choose the correct fields for the given entry type
+	fields = entry_fields[entry_type]
 
-def inproceeding_to_bibtex(inproceeding):
-	entry = '@inproceedings{'
-	entry += inproceeding.cite_id + ',\n'
-	entry += '  author = {' + inproceeding.author + '},\n'
-	entry += '  title = {' + inproceeding.title + '},\n'
-	entry += '  year = {' + str(inproceeding.year) + '},\n'
-	entry += '  booktitle = {' + inproceeding.booktitle + '},\n'
-	entry += '  pages = {' + str(inproceeding.start_page) + '--'+ str(inproceeding.end_page) + '},\n'
-	entry += '}\n'
-	return entry
+	# Create the bibtex entry
+	bibtex_entry = f"{fields['type']}{{{entry.cite_id}}},\n"
+	bibtex_entry += f"  author = {{{entry.author}}},\n"
+	bibtex_entry += f"  title = {{{entry.title}}},\n"
+	bibtex_entry += f"  year = {{{entry.year}}},\n"
+	for field, value in fields["special_fields"]:
+		bibtex_entry += f"  {field} = {{{value}}},\n"
+	bibtex_entry += f"  pages = {{{entry.start_page}--{entry.end_page}}},\n"
+	bibtex_entry += "}\n"
+
+	return bibtex_entry
