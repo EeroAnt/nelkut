@@ -92,9 +92,11 @@ def add_from_doi(db, request, user_id):
 
 	key_str = ', '.join(columns.keys())
 	val_str = ', '.join(':' + key for key in columns)
-	sql = f"INSERT INTO {__make_plural(ref_type)} ({key_str}) VALUES ({val_str})"
+	table_name = __make_plural(ref_type)
+	sql = f"INSERT INTO {table_name} ({key_str}) VALUES ({val_str}) RETURNING id"
 
-	db.session.execute(text(sql), columns)
+	inserted_id = db.session.execute(text(sql), columns).fetchone()[0]
+	__add_tags(db, table_name, inserted_id, request, user_id)
 	db.session.commit()
 	return ResultState.SUCCESS
 

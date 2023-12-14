@@ -78,10 +78,12 @@ def new_tag():
 
 @app.route("/add_from_doi", methods=["GET", "POST"])
 def add_from_doi():
-	if request.method == "GET":
-		return render_template("add_doi_reference.html")
+	user_id = session["user_id"]
 
-	resultState = refservice.add_from_doi(db, request, session["user_id"])
+	if request.method == "GET":
+		return render_template("add_doi_reference.html", tags=refservice.get_tags_for_user(db, user_id))
+
+	resultState = refservice.add_from_doi(db, request, user_id)
 	return __redirect_back(resultState)
 
 @app.route("/bibtex")
