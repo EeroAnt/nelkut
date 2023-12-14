@@ -2,6 +2,22 @@ from sqlalchemy.sql import text
 from flask import render_template
 from habanero import cn
 from doi_handler import from_doi_entry_to_database
+import requests
+
+def __make_plural(name):
+	if name[-1] == "s":
+		return name
+
+	return name + "s"
+
+def get_keys(ref_type):
+	keys = {
+		"inproceedings": ["cite_id", "author", "title", "year", "booktitle", "start_page", "end_page"],
+		"articles":      ["cite_id", "author", "title", "journal", "year", "volume", "start_page", "end_page"],
+		"books":         ["cite_id", "author", "title", "year", "publisher", "start_page", "end_page"]
+	}
+
+	return keys[__make_plural(ref_type)]
 
 class Tag:
 	def __init__(self, id, name):
@@ -15,17 +31,16 @@ def __add_tags(db, table_name, inserted_id, request, user_id):
 		if request.form.get(str(tag.id)) == 'on':
 			db.session.execute(text(sql), {"tag_id": tag.id, "ref_id": inserted_id})
 
-def __insert(db, table_name, keys, request, user_id):
+def __insert(db, table_name, request, user_id):
 	if not check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
 		return False
 
-	colon = ':'
+	keys = get_keys(table_name)
 	key_str = ', '.join(keys)
-	val_str = ', '.join(colon + key for key in keys)
+	val_str = ', '.join(':' + key for key in keys)
 	sql = f"INSERT INTO {table_name} ({key_str}, user_id) VALUES ({val_str}, :user_id) RETURNING id"
 
-	keys_dict = {key: request.form[key] for key in keys}
-	keys_dict = __handle_input(keys_dict)
+	keys_dict = __handle_input({key: request.form[key] for key in keys})
 	keys_dict["user_id"] = user_id
 	inserted_id = db.session.execute(text(sql), keys_dict).fetchone()[0]
 
@@ -34,30 +49,14 @@ def __insert(db, table_name, keys, request, user_id):
 
 	return True
 
-def __insert_from_doi(db, table_name, data):
-	colon = ':'
-	keys = data.keys()
-	key_str = ', '.join(keys)
-	val_str = ', '.join(colon + key for key in keys)
-	sql = f"INSERT INTO {table_name} ({key_str}) VALUES ({val_str})"
-
-	db.session.execute(text(sql), data)
-	db.session.commit()
-
 def add_inproceeding_to_database(db, request, user_id):
-	keys = ["cite_id", "author", "title", "year", "booktitle", "start_page", "end_page"]
-
-	return __insert(db, "inproceedings", keys, request, user_id)
+	return __insert(db, "inproceedings", request, user_id)
 
 def add_article_to_database(db, request, user_id):
-	keys = ["cite_id", "author", "title", "journal", "year", "volume", "start_page", "end_page"]
-
-	return __insert(db, "articles", keys, request, user_id)
+	return __insert(db, "articles", request, user_id)
 
 def add_book_to_database(db, request, user_id):
-	keys = ["cite_id", "author", "title", "year", "publisher", "start_page", "end_page"]
-
-	return __insert(db, "books", keys, request, user_id)
+	return __insert(db, "books", request, user_id)
 
 def add_new_tag(db, request, user_id):
 	sql = "INSERT INTO tags (name, user_id) VALUES (:name, :user_id)"
@@ -77,19 +76,21 @@ def get_tags_for_ref(db, ref_type, ref_id):
 def add_from_doi(db, request, user_id):
 	try:
 		entry = cn.content_negotiation(ids = request.form["doi"])
-		data = from_doi_entry_to_database(entry, user_id, request)
-		if check_users_cite_id_duplicate(data["cite_id"], db, user_id):
-			if data["ENTRYTYPE"]=="article":
-				del data["ENTRYTYPE"]
-				__insert_from_doi(db, "articles", data)
-			elif data["ENTRYTYPE"]=="book":
-				del data["ENTRYTYPE"]
-				__insert_from_doi(db, "books", data)
-			elif data["ENTRYTYPE"]=="inproceedings":
-				del data["ENTRYTYPE"]
-				__insert_from_doi(db, "inproceedings", data)
-	except:
-		return render_template("error.html", message="Invalid DOI.")
+	except requests.exceptions.HTTPError:
+		return False
+
+	columns, ref_type = from_doi_entry_to_database(entry, user_id, request)
+
+	if not check_users_cite_id_duplicate(columns["cite_id"], db, user_id):
+		return False
+
+	key_str = ', '.join(columns.keys())
+	val_str = ', '.join(':' + key for key in columns)
+	sql = f"INSERT INTO {__make_plural(ref_type)} ({key_str}) VALUES ({val_str})"
+
+	db.session.execute(text(sql), columns)
+	db.session.commit()
+	return True
 
 def check_users_cite_id_duplicate(cite_id, db, user_id):
 	sql = "SELECT id FROM users WHERE id=:user_id"

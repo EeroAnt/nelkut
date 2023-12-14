@@ -11,7 +11,7 @@ def __redirect_back(success):
 	return render_template("error.html", message="You already have a reference with this cite ID.")
 
 def __get_tags(ref_type, ref_id):
-	return ", ".join([tag.name for tag in refservice.get_tags_for_ref(db, ref_type, ref_id)])
+	return ", ".join(tag.name for tag in refservice.get_tags_for_ref(db, ref_type, ref_id))
 
 @app.route("/")
 def index():
@@ -76,11 +76,9 @@ def new_tag():
 def add_from_doi():
 	if request.method == "GET":
 		return render_template("add_doi_reference.html")
-	
-	user_id = session["user_id"]
-	refservice.add_from_doi(db, request, user_id)
 
-	return redirect("/")
+	success = refservice.add_from_doi(db, request, session["user_id"])
+	return __redirect_back(success)
 
 @app.route("/bibtex")
 def bibtex():
