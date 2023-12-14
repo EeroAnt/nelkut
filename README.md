@@ -12,6 +12,10 @@ Ryhmä 4 OhTu miniprojekti
 
 Sovellus löytyy [täältä](https://nelkut-minit.fly.dev/).
 
+# Projektin loppuraportti
+
+[report.md](https://github.com/EeroAnt/nelkut/blob/main/report.md)
+
 # Definition of done
 
 Määritellään valmiiksi tehty tarkoittamaan sitä, että vaatimus on analysoitu, suunniteltu, ohjelmoitu, testattu, testaus automatisoitu, dokumentoitu, integroitu muuhun ohjelmistoon ja viety tuotantoympäristöön.
