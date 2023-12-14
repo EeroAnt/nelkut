@@ -11,7 +11,7 @@ Test Setup  Go To Main Page
 User Can Add Article Reference
     Click Link  Login
     Click Link  here
-    Set Username  testiartikkeli65751234
+    Set Username  testiartikkeli657512345
     Set Password  testi123
     Set Password Confirmation  testi123
     Submit Registration
@@ -25,7 +25,7 @@ User Can Add Article Reference
 User Can Add Book Reference
     Click Link  Login
     Click Link  here
-    Set Username  testikirja56851234
+    Set Username  testikirja568512345
     Set Password  testi123
     Set Password Confirmation  testi123
     Submit Registration
@@ -39,7 +39,7 @@ User Can Add Book Reference
 User Can Add Inproceeding Reference
     Click Link  Login
     Click Link  here
-    Set Username  testiinproceeding56951234
+    Set Username  testiinproceeding569512345
     Set Password  testi123
     Set Password Confirmation  testi123
     Submit Registration
