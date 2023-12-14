@@ -10,7 +10,11 @@ Ryhmä 4 OhTu miniprojekti
 
 # Sovellus
 
-Sovellus löytyy [täältä](https://nelkut-snowy-hill-4570.fly.dev/).
+Sovellus löytyy [täältä](https://nelkut-minit.fly.dev/).
+
+# Projektin loppuraportti
+
+[report.md](https://github.com/EeroAnt/nelkut/blob/main/report.md)
 
 # Definition of done
 

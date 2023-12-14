@@ -11,7 +11,7 @@ Test Setup  Go To Main Page
 As A User I Can Register An Account
 	Click Link  Login
 	Click Link  here
-	Set Username  testuser553512
+	Set Username  testuser5535123456
 	Set Password  testpassword
 	Set Password Confirmation  testpassword
 	Submit Registration
