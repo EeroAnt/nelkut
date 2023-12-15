@@ -12,6 +12,15 @@ Ryhmä 4 OhTu miniprojekti
 
 Sovellus löytyy [täältä](https://nelkut-minit.fly.dev/).
 
+Neljännen sprintin toiminnallisuudet (DOIn ja tagien lisäys) löytyy ainoastaan lokaalista versiosta. Asennusohjeet:
+
+1. Asenna PostgreSQL. PostgreSQL:n oman dokumentaation ohjeet löydät [täältä](https://www.postgresql.org/download/)
+2. Kloonaa repo komennolla `git clone git@github.com:EeroAnt/nelkut.git`
+3. Asenna riippuvuudet komennolla `poetry install`
+4. Määritä .env-tiedostoon haluttu tietokannan osoite ja aja siihen schema (HUOM! Tietokannan osoite pitää olla siinä muodossa, että kirjoittamalla konsoliin psql [osoite], tietokantaan muodostetaan yhteys suoraan eli ilman, että tarvitsee erikseen kirjoittaa esim. salasanaa. Lisäksi osoitteen alussa pitää olla postgresql eikä pelkkä postgres.)
+6. Haluttuun tietokantaan yhdistettynä anna komento `psql < schema.sql` reposition juurikansiossa 
+7. Käynnistä sovellus komennolla `flask run`
+
 # Projektin loppuraportti
 
 [report.md](https://github.com/EeroAnt/nelkut/blob/main/report.md)
