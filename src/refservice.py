@@ -1,13 +1,11 @@
+from collections import namedtuple
 import requests
 from sqlalchemy.sql import text
 from habanero import cn
 from doi_handler import from_doi_entry_to_database
 from util import ResultState, get_column_names
 
-class Tag:
-	def __init__(self, tag_id, name):
-		self.id = tag_id
-		self.name = name
+Tag = namedtuple('Tag', ['id', 'name'])
 
 def __add_tags(db, table_name, inserted_id, request, user_id):
 	sql = f"INSERT INTO tags_to_{table_name} (tag_id, {table_name[:-1]}_id) VALUES (:tag_id, :ref_id)"
@@ -16,8 +14,17 @@ def __add_tags(db, table_name, inserted_id, request, user_id):
 		if request.form.get(str(tag.id)) == 'on':
 			db.session.execute(text(sql), {"tag_id": tag.id, "ref_id": inserted_id})
 
+def __user_has_ref_with_cite_id(db, user_id, cite_id):
+	for table in ["books", "articles", "inproceedings"]:
+		sql = f"SELECT * FROM {table} WHERE cite_id=:cite_id AND user_id=:user_id"
+
+		if db.session.execute(text(sql), {"cite_id": cite_id, "user_id": user_id}).fetchall():
+			return True
+
+	return False
+
 def __insert(db, table_name, request, user_id):
-	if not check_users_cite_id_duplicate(request.form["cite_id"], db, user_id):
+	if __user_has_ref_with_cite_id(db, user_id, request.form["cite_id"]):
 		return ResultState.duplicate_cite_id
 
 	keys = get_column_names(table_name)
@@ -25,7 +32,7 @@ def __insert(db, table_name, request, user_id):
 	val_str = ', '.join(':' + key for key in keys)
 	sql = f"INSERT INTO {table_name} ({key_str}, user_id) VALUES ({val_str}, :user_id) RETURNING id"
 
-	columns = __handle_input({key: request.form[key] for key in keys})
+	columns = __handle_missing_numbers({key: request.form[key] for key in keys})
 	columns["user_id"] = user_id
 	inserted_id = db.session.execute(text(sql), columns).fetchone()[0]
 
@@ -62,13 +69,13 @@ def get_tags_for_ref(db, ref_type, ref_id):
 
 def add_from_doi(db, request, user_id):
 	try:
-		entry = cn.content_negotiation(ids = request.form["doi"])
+		entry = cn.content_negotiation(ids = request.form["doi"].replace(" ", ""))
 	except requests.exceptions.HTTPError:
 		return ResultState.doi_not_found
 
 	columns, table_name = from_doi_entry_to_database(entry, user_id, request)
 
-	if not check_users_cite_id_duplicate(columns["cite_id"], db, user_id):
+	if __user_has_ref_with_cite_id(db, user_id, columns["cite_id"]):
 		return ResultState.duplicate_cite_id
 
 	key_str = ', '.join(columns.keys())
@@ -76,21 +83,10 @@ def add_from_doi(db, request, user_id):
 
 	sql = f"INSERT INTO {table_name} ({key_str}) VALUES ({val_str}) RETURNING id"
 
-	inserted_id = db.session.execute(text(sql), columns).fetchone()[0]
+	inserted_id = db.session.execute(text(sql), __handle_missing_numbers(columns)).fetchone()[0]
 	__add_tags(db, table_name, inserted_id, request, user_id)
 	db.session.commit()
 	return ResultState.success
-
-def check_users_cite_id_duplicate(cite_id, db, user_id):
-	sql = "SELECT id FROM users WHERE id=:user_id"
-	if db.session.execute(text(sql), {"user_id":user_id}).fetchone()[0]:
-		for i in ["books", "articles", "inproceedings"]:
-			sql = f"SELECT * FROM {i} WHERE cite_id=:cite_id AND user_id=:user_id"
-			check = db.session.execute(text(sql), {"cite_id":cite_id,"user_id":user_id}).fetchall()
-			if check:
-				return False
-		return user_id
-	return False
 
 def list_books(db, user_id):
 	sql = f"SELECT * FROM books WHERE user_id={user_id}"
@@ -116,9 +112,9 @@ def list_references(db, user_id):
 		books, articles, inproceedings = [], [], []
 	return books, articles, inproceedings
 
-def __handle_input(columns):
+def __handle_missing_numbers(columns):
 	for key in columns:
-		if key in ["start_page", "end_page","volume", "year"]:
+		if key in ["start_page", "end_page", "volume", "year"]:
 			if columns[key] == "":
 				columns[key] = None
 	return columns
