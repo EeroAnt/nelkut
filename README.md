@@ -17,7 +17,7 @@ Neljännen sprintin toiminnallisuudet (DOIn ja tagien lisäys) löytyy ainoastaa
 1. Asenna PostgreSQL. PostgreSQL:n oman dokumentaation ohjeet löydät [täältä](https://www.postgresql.org/download/)
 2. Kloonaa repo komennolla `git clone git@github.com:EeroAnt/nelkut.git`
 3. Asenna riippuvuudet komennolla `poetry install`
-4. Määritä .env-tiedostoon haluttu tietokannan osoite ja aja siihen schema (HUOM! Tietokannan osoite pitää olla siinä muodossa, että kirjoittamalla konsoliin psql [osoite], tietokantaan muodostetaan yhteys suoraan eli ilman, että tarvitsee erikseen kirjoittaa esim. salasanaa. Lisäksi osoitteen alussa pitää olla postgresql eikä pelkkä postgres.)
+4. Määritä .env-tiedostoon haluttu tietokannan osoite sekä `SECRET_KEY` ja aja tietokantaan schema (HUOM! Tietokannan osoite pitää olla siinä muodossa, että kirjoittamalla konsoliin psql [osoite], tietokantaan muodostetaan yhteys suoraan eli ilman, että tarvitsee erikseen kirjoittaa esim. salasanaa. Lisäksi osoitteen alussa pitää olla postgresql eikä pelkkä postgres.)
 6. Haluttuun tietokantaan yhdistettynä anna komento `psql < schema.sql` reposition juurikansiossa 
 7. Käynnistä sovellus komennolla `flask run`
 
