@@ -24,7 +24,7 @@ Yhteensopvivuusongelmien vuoksi viitteiden lisäämistä DOI-tunnisteen avulla t
     * Osoitteen alussa pitää luultavasti olla `postgresql` eikä pelkkä `postgres`
 7. Yhdistä haluamaasi tietokantaan ja anna komento `psql < schema.sql` reposition juurikansiossa
     * Jos tässä on ongelmia, voit myös avata `psql`-tulkin ja copypasteta siihen `schema.sql`:n sisällön
-8. Käynnistä sovellus komennolla `poetry run flask run`
+8. Siiry `src`-kansioon ja käynnistä sovellus komennolla `poetry run flask run`
 
 ## Projektin loppuraportti
 
