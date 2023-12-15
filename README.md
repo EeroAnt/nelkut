@@ -3,7 +3,7 @@
 
 [![codecov](https://codecov.io/gh/EeroAnt/nelkut/graph/badge.svg?token=QIODCMQO6O)](https://codecov.io/gh/EeroAnt/nelkut)
 
-Ryhmä 4 OhTu miniprojekti
+Ryhmä 4 OhTu miniprojekti 
 # Backlog
 
 [Backlog](https://docs.google.com/spreadsheets/d/1923qVBaTEvUpGSOyh8lcoLwEM9oUUErB05xrt4Awjx4/edit#gid=1)
