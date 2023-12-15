@@ -12,14 +12,19 @@ Ryhmä 4 OhTu miniprojekti
 
 Sovellus löytyy [täältä](https://nelkut-minit.fly.dev/).
 
-Neljännen sprintin toiminnallisuudet (DOIn ja tagien lisäys) löytyy ainoastaan lokaalista versiosta. Asennusohjeet:
+Yhteensopvivuusongelmien vuoksi viitteiden lisäämistä DOI-tunnisteen avulla tuetaan ainoastaan lokaalissa versiossa.
+
+## Asennusohjeet
 
 1. Asenna PostgreSQL. PostgreSQL:n oman dokumentaation ohjeet löydät [täältä](https://www.postgresql.org/download/)
 2. Kloonaa repo komennolla `git clone git@github.com:EeroAnt/nelkut.git`
 3. Asenna riippuvuudet komennolla `poetry install`
-4. Määritä .env-tiedostoon haluttu tietokannan osoite sekä `SECRET_KEY` ja aja tietokantaan schema (HUOM! Tietokannan osoite pitää olla siinä muodossa, että kirjoittamalla konsoliin `psql [osoite]`, tietokantaan muodostetaan yhteys suoraan eli ilman, että tarvitsee erikseen kirjoittaa esim. salasanaa. Lisäksi osoitteen alussa pitää olla `postgresql` eikä pelkkä `postgres`.)
-6. Haluttuun tietokantaan yhdistettynä anna komento `psql < schema.sql` reposition juurikansiossa 
-7. Käynnistä sovellus komennolla `flask run`
+4. Lisää `.env`-tiedosto, jossa on määritellään muuttuja `DATABASE`, jonka arvo on haluamasi tietokannan osoite lainausmerkeissä, sekä muuttuja `SECRET_KEY`, jonka arvo voi olla mikä tahansa merkkijono
+    * Tietokannan osoite pitää olla siinä muodossa, että kirjoittamalla konsoliin `psql [osoite]`, tietokantaan muodostetaan yhteys suoraan eli ilman, että tarvitsee erikseen kirjoittaa esim. salasanaa
+    * Osoitteen alussa pitää luultavasti olla `postgresql` eikä pelkkä `postgres`
+7. Yhdistä haluamaasi tietokantaan ja anna komento `psql < schema.sql` reposition juurikansiossa
+    * Jos tässä on ongelmia, voit myös avata `psql`-tulkin ja copypasteta siihen `schema.sql`:n sisällön
+8. Käynnistä sovellus komennolla `poetry run flask run`
 
 ## Projektin loppuraportti
 
