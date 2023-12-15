@@ -1,19 +1,16 @@
-from flask import session
-from db import db
-from refservice import list_references
+import refservice
 
-def sort_entries():
-	books, articles, inproceedings = list_references(db, session["user_id"])
+def write_bibtex_file(db, user_id, output_file):
+	books, articles, inproceedings = refservice.list_references(db, user_id)
 	entries = []
+
 	for book in books:
 		entries.append(book_to_bibtex(book))
 	for article in articles:
 		entries.append(article_to_bibtex(article))
 	for inproceeding in inproceedings:
 		entries.append(inproceeding_to_bibtex(inproceeding))
-	return entries
 
-def write_bibtex_file(entries, output_file):
 	with open(output_file, 'w', encoding="utf8") as f:
 		for entry in entries:
 			f.write(entry)

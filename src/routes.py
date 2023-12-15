@@ -3,7 +3,7 @@ from app import app
 import refservice
 import users
 from db import db
-from bibtex_creator import write_bibtex_file, sort_entries
+from bibtex_creator import write_bibtex_file
 
 def __redirect_back(result_state):
 	match result_state:
@@ -91,7 +91,7 @@ def add_from_doi():
 
 @app.route("/bibtex")
 def bibtex():
-	write_bibtex_file(sort_entries(), "bibtex.bib")
+	write_bibtex_file(db, session["user_id"], "bibtex.bib")
 	return redirect("/download")
 
 @app.route("/download")
