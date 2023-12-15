@@ -79,16 +79,6 @@ def new_tag():
 
 	return redirect("/")
 
-@app.route("/add_from_doi", methods=["GET", "POST"])
-def add_from_doi():
-	user_id = session["user_id"]
-
-	if request.method == "GET":
-		return render_template("add_doi_reference.html", tags=refservice.get_tags_for_user(db, user_id))
-
-	result_state = refservice.add_from_doi(db, request, user_id)
-	return __redirect_back(result_state)
-
 @app.route("/bibtex")
 def bibtex():
 	write_bibtex_file(db, session["user_id"], "bibtex.bib")

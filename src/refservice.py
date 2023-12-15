@@ -1,7 +1,6 @@
 from collections import namedtuple
 import requests
 from sqlalchemy.sql import text
-from habanero import cn
 from doi_handler import from_doi_entry_to_database
 from util import ResultState, get_column_names
 
@@ -66,27 +65,6 @@ def get_tags_for_ref(db, ref_type, ref_id):
 
 	results = db.session.execute(text(sql), {"ref_id": ref_id}).fetchall()
 	return [Tag(*args) for args in results]
-
-def add_from_doi(db, request, user_id):
-	try:
-		entry = cn.content_negotiation(ids = request.form["doi"].replace(" ", ""))
-	except requests.exceptions.HTTPError:
-		return ResultState.doi_not_found
-
-	columns, table_name = from_doi_entry_to_database(entry, user_id, request)
-
-	if __user_has_ref_with_cite_id(db, user_id, columns["cite_id"]):
-		return ResultState.duplicate_cite_id
-
-	key_str = ', '.join(columns.keys())
-	val_str = ', '.join(':' + key for key in columns)
-
-	sql = f"INSERT INTO {table_name} ({key_str}) VALUES ({val_str}) RETURNING id"
-
-	inserted_id = db.session.execute(text(sql), __handle_missing_numbers(columns)).fetchone()[0]
-	__add_tags(db, table_name, inserted_id, request, user_id)
-	db.session.commit()
-	return ResultState.success
 
 def list_books(db, user_id):
 	sql = f"SELECT * FROM books WHERE user_id={user_id}"
