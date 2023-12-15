@@ -1,5 +1,0 @@
-Hyvä backlog
-Testeistä lähti puolet pisteistä
-Liitteen tyyppi esiin listaukseen
-Testit kasaan aikaisemmille user storeille
-Asennusohjeet puutteliset
